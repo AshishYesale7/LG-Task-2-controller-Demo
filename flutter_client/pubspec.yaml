@@ -8,15 +8,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  dartssh2: ^2.9.0+2
-  provider: ^6.1.1
-  http: ^1.2.0
+  dartssh2: ^2.13.0
+  provider: ^6.1.5+1
+  http: ^1.6.0
   xml: ^6.3.0
-  shared_preferences: ^2.2.2
-  flutter_secure_storage: ^9.0.0
-  path_provider: ^2.1.1
-  web_socket_channel: ^3.0.1
+  shared_preferences: ^2.5.4
+  flutter_secure_storage: ^10.0.0
+  path_provider: ^2.1.5
+  web_socket_channel: ^3.0.3
   cupertino_icons: ^1.0.6
+  google_maps_flutter: ^2.14.2
 
 dev_dependencies:
   flutter_test:
