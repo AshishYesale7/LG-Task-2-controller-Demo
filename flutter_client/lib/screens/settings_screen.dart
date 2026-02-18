@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_client/providers/settings_provider.dart';
-import 'package:flutter_client/providers/theme_provider.dart';
+import 'package:lg_task2_demo/providers/settings_provider.dart';
+import 'package:lg_task2_demo/providers/theme_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

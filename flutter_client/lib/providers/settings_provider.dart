@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_client/config.dart';
+import 'package:lg_task2_demo/config.dart';
 
 /// Manages LG connection settings with persistence.
 ///

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_client/models/flow_node.dart';
+import 'package:lg_task2_demo/models/flow_node.dart';
 
 /// A single node card in the flow — styled like an n8n node.
 class FlowNodeCard extends StatelessWidget {

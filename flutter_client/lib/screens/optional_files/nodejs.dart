@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_client/config.dart';
+import 'package:lg_task2_demo/config.dart';
 
 /// Demonstrates connecting to a Node.js backend server.
 ///

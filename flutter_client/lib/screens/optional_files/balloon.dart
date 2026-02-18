@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_client/services/lg_service.dart';
+import 'package:lg_task2_demo/services/lg_service.dart';
 
 /// KML Balloon demo – teaches students how to create rich HTML
 /// balloons inside KML placemarks and display them on Liquid Galaxy.

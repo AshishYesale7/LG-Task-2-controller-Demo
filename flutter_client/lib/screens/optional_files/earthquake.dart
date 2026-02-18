@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_client/services/lg_service.dart';
+import 'package:lg_task2_demo/services/lg_service.dart';
 
 /// Data-visualisation demo – recent earthquakes on Liquid Galaxy.
 ///

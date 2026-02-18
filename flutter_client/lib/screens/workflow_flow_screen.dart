@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_client/models/flow_node.dart';
-import 'package:flutter_client/widgets/flow_node_card.dart';
-import 'package:flutter_client/widgets/flow_edge_painter.dart';
+import 'package:lg_task2_demo/models/flow_node.dart';
+import 'package:lg_task2_demo/widgets/flow_node_card.dart';
+import 'package:lg_task2_demo/widgets/flow_edge_painter.dart';
 
 // ---------------------------------------------------------------------------
 // Antigravity pipeline data — matches .agent/workflows/full-pipeline.md

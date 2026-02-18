@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_client/models/flow_node.dart';
+import 'package:lg_task2_demo/models/flow_node.dart';
 
 /// Paints bezier-curve connections between flow nodes — n8n style.
 class FlowEdgePainter extends CustomPainter {

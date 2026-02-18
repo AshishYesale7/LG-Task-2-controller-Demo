@@ -3,4 +3,4 @@
 /// The canonical definition lives in [SSHService] to respect the
 /// 5-layer architecture (transport layer owns its own types).
 /// This file exists for backward compatibility.
-export 'package:flutter_client/services/ssh_service.dart' show ConnectionStatus;
+export 'package:lg_task2_demo/services/ssh_service.dart' show ConnectionStatus;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_client/services/lg_service.dart';
+import 'package:lg_task2_demo/services/lg_service.dart';
 
 /// Orbit demo screen – lets students fly to a location and start
 /// a full 360° camera orbit around it on the Liquid Galaxy rig.
