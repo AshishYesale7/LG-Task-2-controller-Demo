@@ -1,0 +1,18 @@
+{
+  "name": "lg-starter-server",
+  "version": "1.0.0",
+  "description": "Node.js companion server for LG Flutter Starter Kit",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

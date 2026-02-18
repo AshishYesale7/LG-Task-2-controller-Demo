@@ -1,0 +1,100 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Flutter Build — Android APK
+# Builds debug + release APKs on push to main or manual trigger.
+# Release APK is split-per-ABI for smaller download sizes.
+# ─────────────────────────────────────────────────────────────────────────────
+name: Flutter Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'flutter_client/**'
+      - '.github/workflows/flutter-build.yml'
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+          - debug
+          - release
+      lg_host:
+        description: 'LG rig master IP (baked into APK via --dart-define)'
+        required: false
+        default: '192.168.56.101'
+
+# Cancel in-progress runs for the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: flutter_client
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Pre-build checks
+        run: |
+          flutter analyze --no-fatal-infos
+          dart format --set-exit-if-changed .
+
+      # ── Debug Build ───────────────────────────────────────────────────────
+      - name: Build debug APK
+        if: github.event.inputs.build_type == 'debug' || github.event.inputs.build_type == ''
+        run: |
+          flutter build apk --debug \
+            --dart-define=LG_HOST=${{ github.event.inputs.lg_host || '192.168.56.101' }}
+
+      # ── Release Build (split per ABI for smaller APKs) ────────────────────
+      - name: Build release APK
+        if: github.event.inputs.build_type == 'release' || github.event_name == 'push'
+        run: |
+          flutter build apk --release --split-per-abi \
+            --dart-define=LG_HOST=${{ github.event.inputs.lg_host || '192.168.56.101' }}
+
+      # ── Upload Artifacts ──────────────────────────────────────────────────
+      - name: Upload APK artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-${{ github.sha }}
+          path: |
+            flutter_client/build/app/outputs/flutter-apk/*.apk
+          retention-days: 30
+
+      - name: Summary
+        run: |
+          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Key | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Build Type | ${{ github.event.inputs.build_type || 'release' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| LG Host | ${{ github.event.inputs.lg_host || '192.168.56.101' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### APK Files" >> $GITHUB_STEP_SUMMARY
+          ls -lh build/app/outputs/flutter-apk/*.apk 2>/dev/null || echo "No APK files found"  >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,125 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Security Scan — Dependency Audit & Secret Detection
+# Mirrors the lg-shield skill's pre/post security bookends.
+# Runs on every PR and weekly on main.
+# ─────────────────────────────────────────────────────────────────────────────
+name: Security Scan
+
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly scan every Monday at 08:00 UTC
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+jobs:
+  dependency-audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: flutter_client
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Check outdated packages
+        run: flutter pub outdated
+        continue-on-error: true
+
+      - name: Audit dependencies
+        run: |
+          echo "## Dependency Audit" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          flutter pub deps 2>&1 | head -50 >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+  secret-detection:
+    name: Secret Detection
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan for hardcoded secrets
+        run: |
+          echo "## Secret Detection Report" >> $GITHUB_STEP_SUMMARY
+          FOUND=0
+
+          # Check for common secret patterns
+          echo "### Scanning for hardcoded credentials..." >> $GITHUB_STEP_SUMMARY
+
+          # API keys (generic pattern)
+          if grep -rn --include="*.dart" --include="*.yaml" --include="*.json" --include="*.js" \
+            -E '(api[_-]?key|apikey|secret[_-]?key)\s*[:=]\s*["\x27][A-Za-z0-9_\-]{20,}' \
+            --exclude-dir=.git --exclude-dir=build --exclude-dir=.dart_tool .; then
+            echo "⚠️ Potential API keys found" >> $GITHUB_STEP_SUMMARY
+            FOUND=1
+          fi
+
+          # Hardcoded passwords (excluding default lg/lg which is expected)
+          if grep -rn --include="*.dart" --include="*.yaml" --include="*.json" \
+            -E 'password\s*[:=]\s*["\x27](?!lg["\x27])[^\s"'\'']{8,}' \
+            --exclude-dir=.git --exclude-dir=build --exclude-dir=.dart_tool .; then
+            echo "⚠️ Potential hardcoded passwords found" >> $GITHUB_STEP_SUMMARY
+            FOUND=1
+          fi
+
+          # Private keys
+          if grep -rn --include="*.dart" --include="*.pem" --include="*.key" \
+            -E 'BEGIN (RSA |EC |DSA )?PRIVATE KEY' \
+            --exclude-dir=.git --exclude-dir=build .; then
+            echo "🚨 Private key files detected!" >> $GITHUB_STEP_SUMMARY
+            FOUND=1
+          fi
+
+          if [ "$FOUND" -eq 0 ]; then
+            echo "✅ No hardcoded secrets detected" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "🔒 **Action Required**: Move secrets to environment variables or flutter_secure_storage" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+  node-audit:
+    name: Node.js Dependency Audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Audit summary
+        run: |
+          echo "## Node.js Audit" >> $GITHUB_STEP_SUMMARY
+          npm audit 2>&1 | tail -20 >> $GITHUB_STEP_SUMMARY || true
