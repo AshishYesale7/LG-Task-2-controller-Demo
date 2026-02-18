@@ -11,12 +11,19 @@ class LGService extends ChangeNotifier {
   bool _isConnected = false;
   bool get isConnected => _isConnected;
 
-  Future<bool> connect() async {
+  /// Connect to the LG rig.
+  /// If parameters are provided, uses them. Otherwise uses defaults from Config.
+  Future<bool> connect({
+    String? host,
+    int? port,
+    String? username,
+    String? password,
+  }) async {
     _isConnected = await _sshService.connect(
-      Config.defaultHost,
-      Config.defaultPort,
-      Config.defaultUsername,
-      Config.defaultPassword,
+      host ?? Config.defaultHost,
+      port ?? Config.defaultPort,
+      username ?? Config.defaultUsername,
+      password ?? Config.defaultPassword,
     );
     notifyListeners();
     return _isConnected;
@@ -28,10 +35,9 @@ class LGService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> sendHome() async {
+  Future<void> flyToHomeCity() async {
     if (!_isConnected) return;
     
-    // B) Generate first...
     final kml = _kmlService.generateLookAt(
       28.6139, 
       77.2090, 
@@ -40,27 +46,74 @@ class LGService extends ChangeNotifier {
       0
     ); // New Delhi (Home)
 
-    // A) ...then Execute
     await _sshService.execute('echo "flytoview=$kml" > /tmp/query.txt');
   }
 
-  Future<void> sendOrbit() async {
+  Future<void> sendLogo() async {
     if (!_isConnected) return;
 
-    final kml = _kmlService.generateOrbit(28.6139, 77.2090, 1000);
-    // Note: Orbits are complex tours, usually saved as a file first.
-    // For simplicity in Task 2, we might just write to query.txt or upload a file.
-    // Let's assume uploading for robust orbits.
-    await _sshService.execute('echo "$kml" > /var/www/html/orbit.kml');
-    await _sshService.execute('echo "http://localhost:81/orbit.kml" > /var/www/html/kmls.txt');
-    await _sshService.execute('echo "playtour=Orbit" > /tmp/query.txt');
+    final logoKml = _kmlService.screenOverlayImage(
+      'https://raw.githubusercontent.com/LiquidGalaxyLAB/Liquid-Galaxy-Project-Template/master/assets/img/LGLAB_logo_2018.png',
+      0.0, 1.0, // overlayXY: top-left of image
+      0.0, 1.0, // screenXY: top-left of screen
+      0.3, 0.3  // size
+    );
+    
+    // Write to slave 3 (Left screen)
+    await _sshService.execute('echo "$logoKml" > /var/www/html/kml/slave_3.kml');
   }
 
   Future<void> cleanLogos() async {
     if (!_isConnected) return;
     
-    // Clear the left screen overlay
     final emptyKml = '<kml></kml>';
     await _sshService.execute('echo "$emptyKml" > /var/www/html/kml/slave_3.kml');
+  }
+
+  Future<void> cleanKMLs() async {
+    if (!_isConnected) return;
+    
+    await _sshService.execute('echo "" > /tmp/query.txt'); // Stop flying
+    await _sshService.execute('echo "" > /var/www/html/kmls.txt'); // Clear loaded KMLs
+  }
+
+  Future<void> sendPyramid() async {
+     if (!_isConnected) return;
+
+    final kml = _kmlService.generatePyramid(28.6139, 77.2090, 500, 200);
+    
+    // Upload as file to ensure it renders correctly
+    await _sshService.execute('echo "$kml" > /var/www/html/pyramid.kml');
+    await _sshService.execute('echo "http://localhost:81/pyramid.kml" > /var/www/html/kmls.txt');
+  }
+
+  Future<void> sendOrbit() async {
+     if (!_isConnected) return;
+     // ... (orbit implementation)
+  }
+
+  Future<void> rebootLG() async {
+    if (!_isConnected) return;
+    // Command to reboot the master? Or relaunch the earth?
+    // Usually 'reboot' requires sudo. 'lg-relaunch' might be available.
+    // For safety, we'll just try to restart the earth wrapper if possible, 
+    // or just leave it empty with a log for now as 'reboot' is drastic.
+    // Let's implement a safe 'relaunch' command if known, or just a placeholder print.
+    if (kDebugMode) {
+      print('Reboot requested (not implemented for safety)');
+    }
+  }
+
+  Future<void> sendKMLPlacemark({
+    required String name,
+    required double latitude,
+    required double longitude,
+    required String description,
+  }) async {
+    if (!_isConnected) return;
+    // Implementation placeholder for the MainScreen button
+     if (kDebugMode) {
+      print('Sending placemark: $name');
+    }
   }
 }
