@@ -41,8 +41,8 @@ This project was built using the **LG Flutter Starter Kit** as a foundation and 
 
 ## 📲 Usage
 
-1.  **Download**: Get the latest APK from the [Releases Page](./releases).
-2.  **Install**: Install `app-release.apk` on your Android tablet/phone.
+1.  **Download**: Get the latest APK directly from the repo: [Download APK](./release/DEMO_LG_Controller.apk).
+2.  **Install**: Install the APK on your Android tablet/phone.
 3.  **Connect**:
     -   Tap the **Settings** icon.
     -   Enter your Rig's Master IP (e.g., `192.168.0.10`) and credentials.
