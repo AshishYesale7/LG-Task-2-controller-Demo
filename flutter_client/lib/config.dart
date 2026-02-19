@@ -1,8 +1,11 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class Config {
   static const String appName = 'LG Controller';
   static const int defaultTotalScreens = 3;
-  static const int defaultPort = 22;
-  static const String defaultUsername = 'lg';
-  static const String defaultPassword = 'lq'; // Default LG password
-  static const String defaultHost = '192.168.0.10'; // Default IP (change as needed)
+  static int get defaultPort => int.tryParse(dotenv.env['LG_PORT'] ?? '') ?? 22;
+  static String get defaultUsername => dotenv.env['LG_USER'] ?? 'lg';
+  static String get defaultPassword => dotenv.env['LG_PASSWORD'] ?? 'lg'; // Default LG password
+  static String get defaultHost => dotenv.env['LG_HOST'] ?? '10.252.42.35'; // Default IP
+  static String get defaultWeatherApiKey => dotenv.env['WEATHER_KEY'] ?? '52ac155e6c55a0cdd61bd08721f43267';
 }

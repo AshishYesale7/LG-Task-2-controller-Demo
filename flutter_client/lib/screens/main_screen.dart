@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lg_task2_demo/services/lg_service.dart';
+import 'package:lg_task2_demo/providers/settings_provider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -26,6 +27,28 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // Listen to LGService errors
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final lgService = context.read<LGService>();
+      lgService.onError.listen((error) {
+        if (mounted) {
+           ScaffoldMessenger.of(context).showSnackBar(
+             SnackBar(
+               content: Text(error),
+               backgroundColor: Colors.red,
+               duration: const Duration(seconds: 4),
+             ),
+           );
+        }
+      });
+    });
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
     final lgService = context.watch<LGService>();
 
@@ -34,11 +57,7 @@ class _MainScreenState extends State<MainScreen> {
         title: const Text('LG Controller'),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.account_tree),
-            tooltip: 'Antigravity Workflow',
-            onPressed: () => Navigator.pushNamed(context, '/workflow'),
-          ),
+
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => Navigator.pushNamed(context, '/settings'),
@@ -110,14 +129,28 @@ class _MainScreenState extends State<MainScreen> {
               () => _executeAction(() => lgService.flyToHomeCity()),
             ),
             _buildActionButton(
-              'Clean Logos',
+              'Remove Logo',
               Icons.layers_clear,
               () => _executeAction(() => lgService.cleanLogos()),
             ),
             _buildActionButton(
-              'Clean KMLs',
-              Icons.clear_all,
-              () => _executeAction(() => lgService.cleanKMLs()),
+              'Show Weather (Lleida)',
+              Icons.cloud,
+              () {
+                final settings = context.read<SettingsProvider>();
+                if (settings.weatherApiKey.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please set Weather API Key in Settings')),
+                  );
+                  return;
+                }
+                _executeAction(() => lgService.sendWeather('Lleida', settings.weatherApiKey));
+              },
+            ),
+            _buildActionButton(
+              'Clean KML + Logos',
+              Icons.delete_sweep,
+              () => _executeAction(() => lgService.cleanKMLAndLogos()),
             ),
             const Divider(height: 32),
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:lg_task2_demo/config.dart';
+import 'package:lg_task2_demo/config.dart' as AppConfig;
 
 /// Manages LG connection settings with persistence.
 ///
@@ -10,17 +10,19 @@ import 'package:lg_task2_demo/config.dart';
 class SettingsProvider extends ChangeNotifier {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
-  String _host = Config.lgHost;
-  int _port = Config.lgPort;
-  String _username = Config.lgUser;
-  String _password = Config.lgPassword;
-  int _totalScreens = Config.totalScreens;
+  String _host = AppConfig.Config.defaultHost;
+  int _port = AppConfig.Config.defaultPort;
+  String _username = AppConfig.Config.defaultUsername;
+  String _password = AppConfig.Config.defaultPassword;
+  int _totalScreens = AppConfig.Config.defaultTotalScreens;
+  String _weatherApiKey = AppConfig.Config.defaultWeatherApiKey;
 
   String get host => _host;
   int get port => _port;
   String get username => _username;
   String get password => _password;
   int get totalScreens => _totalScreens;
+  String get weatherApiKey => _weatherApiKey;
 
   SettingsProvider() {
     _loadSettings();
@@ -28,13 +30,14 @@ class SettingsProvider extends ChangeNotifier {
 
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
-    _host = prefs.getString('lg_host') ?? Config.lgHost;
-    _port = prefs.getInt('lg_port') ?? Config.lgPort;
-    _totalScreens = prefs.getInt('lg_screens') ?? Config.totalScreens;
+    _host = prefs.getString('lg_host') ?? AppConfig.Config.defaultHost;
+    _port = prefs.getInt('lg_port') ?? AppConfig.Config.defaultPort;
+    _totalScreens = prefs.getInt('lg_screens') ?? AppConfig.Config.defaultTotalScreens;
 
     // Load sensitive credentials from secure storage
-    _username = await _secureStorage.read(key: 'lg_user') ?? Config.lgUser;
-    _password = await _secureStorage.read(key: 'lg_password') ?? Config.lgPassword;
+    _username = await _secureStorage.read(key: 'lg_user') ?? AppConfig.Config.defaultUsername;
+    _password = await _secureStorage.read(key: 'lg_password') ?? AppConfig.Config.defaultPassword;
+    _weatherApiKey = await _secureStorage.read(key: 'weather_api_key') ?? AppConfig.Config.defaultWeatherApiKey;
 
     notifyListeners();
   }
@@ -45,6 +48,7 @@ class SettingsProvider extends ChangeNotifier {
     String? username,
     String? password,
     int? totalScreens,
+    String? weatherApiKey,
   }) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -70,6 +74,10 @@ class SettingsProvider extends ChangeNotifier {
       _password = password;
       await _secureStorage.write(key: 'lg_password', value: password);
     }
+    if (weatherApiKey != null) {
+      _weatherApiKey = weatherApiKey;
+      await _secureStorage.write(key: 'weather_api_key', value: weatherApiKey);
+    }
 
     notifyListeners();
   }
@@ -83,12 +91,14 @@ class SettingsProvider extends ChangeNotifier {
     // Clear secure storage
     await _secureStorage.delete(key: 'lg_user');
     await _secureStorage.delete(key: 'lg_password');
+    await _secureStorage.delete(key: 'weather_api_key');
 
-    _host = Config.lgHost;
-    _port = Config.lgPort;
-    _username = Config.lgUser;
-    _password = Config.lgPassword;
-    _totalScreens = Config.totalScreens;
+    _host = AppConfig.Config.defaultHost;
+    _port = AppConfig.Config.defaultPort;
+    _username = AppConfig.Config.defaultUsername;
+    _password = AppConfig.Config.defaultPassword;
+    _totalScreens = AppConfig.Config.defaultTotalScreens;
+    _weatherApiKey = AppConfig.Config.defaultWeatherApiKey;
 
     notifyListeners();
   }

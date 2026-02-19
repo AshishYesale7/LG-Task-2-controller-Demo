@@ -7,11 +7,14 @@ import 'package:lg_task2_demo/screens/main_screen.dart';
 import 'package:lg_task2_demo/screens/connection_screen.dart';
 import 'package:lg_task2_demo/screens/settings_screen.dart';
 import 'package:lg_task2_demo/screens/help_screen.dart';
-import 'package:lg_task2_demo/screens/workflow_flow_screen.dart';
+
 import 'package:lg_task2_demo/services/lg_service.dart';
 
-void main() {
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   runApp(
     MultiProvider(
       providers: [
@@ -52,7 +55,7 @@ class LGStarterApp extends StatelessWidget {
         '/main': (context) => const MainScreen(),
         '/settings': (context) => const SettingsScreen(),
         '/help': (context) => const HelpScreen(),
-        '/workflow': (context) => const WorkflowFlowScreen(),
+
       },
     );
   }

@@ -49,6 +49,8 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
     try {
       // Persist credentials via secure storage before connecting
       final settings = context.read<SettingsProvider>();
+      final lgService = context.read<LGService>();
+
       await settings.updateSettings(
         host: _hostController.text,
         port: int.tryParse(_portController.text) ?? settings.port,
@@ -56,7 +58,6 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
         password: _passController.text,
       );
 
-      final lgService = context.read<LGService>();
       await lgService.connect(
         host: _hostController.text,
         port: int.tryParse(_portController.text) ?? settings.port,
