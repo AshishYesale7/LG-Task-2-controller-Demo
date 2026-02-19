@@ -35,7 +35,7 @@ class LGStarterApp extends StatelessWidget {
     final themeProvider = context.watch<ThemeProvider>();
 
     return MaterialApp(
-      title: 'LG Starter Kit',
+      title: 'DEMO LG Controller',
       debugShowCheckedModeBanner: false,
       themeMode: themeProvider.themeMode,
       theme: ThemeData(
