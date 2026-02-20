@@ -4,7 +4,7 @@
 
 This application serves as a comprehensive controller for a Liquid Galaxy rig, demonstrating the power of the **LG Flutter Starter Kit** combined with **AI-driven development (Agentic Coding)**.
 
-## 🚀 Features
+##  Features
 
 *   **Connectivity Management**: Secure SSH connection to the Liquid Galaxy Master node.
 *   **Logo Management**: 
@@ -19,7 +19,7 @@ This application serves as a comprehensive controller for a Liquid Galaxy rig, d
 *   **System Control**:
     -   **Reboot LG**: Remotely reboots the entire Liquid Galaxy rig (Master + Slaves).
 
-## 🛠️ How It Was Made
+##  How It Was Made
 
 This project was built using the **LG Flutter Starter Kit** as a foundation and rapidly developed using **AI Agents**.
 
@@ -39,7 +39,7 @@ This project was built using the **LG Flutter Starter Kit** as a foundation and 
     -   **Execution**: Code was generated, debugged, and refined by AI agents.
     -   **Verification**: Automated build tools and manual verification steps ensured quality.
 
-## 📲 Usage
+##  Usage
 
 1.  **Download**: Get the latest APK directly from the repo: [Download APK](./release/DEMO_LG_Controller.apk).
 2.  **Install**: Install the APK on your Android tablet/phone.
@@ -49,7 +49,7 @@ This project was built using the **LG Flutter Starter Kit** as a foundation and 
     -   Tap **Connect**.
 4.  **Control**: Use the buttons on the main screen to interact with the rig.
 
-## 📦 LG Flutter Starter Kit
+##  LG Flutter Starter Kit
 
 This project demonstrates how easily the **LG Flutter Starter Kit** can be extended. The kit provides:
 -   Pre-configured SSH logic.
